@@ -1,0 +1,25 @@
+livekit-agents[deepgram,openai,cartesia,silero,turn-detector,groq]~=1.0
+livekit-plugins-noise-cancellation~=0.2
+python-dotenv
+
+# FastAPI dependencies (for optional API server)
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+httpx>=0.25.0
+
+# Enhanced Pydantic for validation
+pydantic[email]>=2.0.0
+
+# Redis for cross-process communication
+redis>=4.5.0
+
+# MongoDB for agent schema storage
+motor>=3.3.0
+pymongo>=4.6.0
+
+# Testing dependencies
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0  # For coverage reporting
+httpx>=0.25.0  # For async test client
+pytest-mock>=3.11.0
