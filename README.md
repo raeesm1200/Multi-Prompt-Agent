@@ -285,3 +285,274 @@ Built with async/await throughout for:
 ---
 
 *This implementation demonstrates clean, professional, and scalable architecture suitable for production multi-prompt agent systems.*
+
+## Future Enhancements & Roadmap
+
+### 🐳 **Planned Containerization**
+
+The next major enhancement will be containerizing the entire application for better deployment and scalability:
+
+#### **Proposed Containerization Architecture:**
+- **Multi-service Setup**: Separate containers for API server, agent workers, Redis, and MongoDB
+- **Development Environment**: `docker-compose.yml` for local development with hot reloading
+- **Production Configuration**: Optimized Docker images with resource limits and health checks
+- **Cross-platform Compatibility**: Consistent deployment across macOS, Linux, and Windows
+
+#### **Expected Benefits:**
+- **Environment Consistency**: Eliminate "works on my machine" deployment issues
+- **Easy Scaling**: Horizontally scale agent workers based on demand
+- **Simplified Deployment**: One-command deployment across different environments
+- **Resource Management**: CPU and memory limits to prevent resource contention
+- **Service Isolation**: Database failures won't affect agent processing
+- **Version Control**: Easy rollback and blue-green deployments
+
+#### **Implementation Plan:**
+```bash
+# Phase 1: Basic containerization
+- Create Dockerfile for main application
+- Set up docker-compose for development
+- Configure health checks and logging
+
+# Phase 2: Production optimization
+- Multi-stage builds for smaller images
+- Production docker-compose with resource limits
+- Container orchestration with Kubernetes
+
+# Phase 3: Advanced features
+- Auto-scaling based on load
+- Service mesh for microservices communication
+- Container security scanning and hardening
+```
+
+### 🚀 **Planned CI/CD Pipeline**
+
+A comprehensive DevOps pipeline will be implemented to automate testing, building, and deployment:
+
+#### **Proposed Pipeline Architecture:**
+- **Automated Testing**: Unit and integration tests on every commit
+- **Security Scanning**: Vulnerability checks for code and dependencies
+- **Multi-environment Deployment**: Separate staging and production workflows
+- **Quality Gates**: Code coverage thresholds and lint checks
+
+#### **Expected Benefits:**
+- **Quality Assurance**: Prevent broken code from reaching production
+- **Fast Feedback**: Issues caught within minutes of commit
+- **Automated Deployment**: Zero-downtime deployments with rollback capability
+- **Security**: Regular vulnerability scans and dependency updates
+- **Compliance**: Audit trails for all changes and deployments
+
+#### **Implementation Phases:**
+```yaml
+Phase 1: Basic CI
+  - GitHub Actions workflow setup
+  - Automated test execution
+  - Code quality checks (linting, formatting)
+
+Phase 2: Advanced CI/CD
+  - Docker image building and scanning
+  - Multi-environment deployments
+  - Automated rollback on failures
+
+Phase 3: Production Pipeline
+  - Blue-green deployments
+  - Performance testing integration
+  - Monitoring and alerting setup
+```
+
+#### **Expected Business Impact:**
+- **Faster Time-to-Market**: Reduce deployment time from hours to minutes
+- **Reduced Human Error**: Automated processes eliminate manual mistakes
+- **Cost Efficiency**: Early bug detection is 10x cheaper than post-production fixes
+- **Developer Productivity**: Focus on features instead of deployment mechanics
+
+### 🛠️ **Custom Tools Integration**
+
+The agent factory system is designed for easy extension with custom business tools:
+
+#### **Current Tool Architecture:**
+```python
+# Agent Factory supports dynamic tool creation
+{
+  "name": "SchedulingAgent",
+  "tools": ["calendar_integration", "email_notifications"],
+  "edges": [
+    {
+      "name": "schedule_call",
+      "action": "action",  # Custom function execution
+      "target_agent": "ConfirmationAgent"
+    }
+  ]
+}
+```
+
+#### **How to Add Custom Tools:**
+
+**1. Define Tool Interface:**
+```python
+# src/agents/tools/scheduling.py
+@function_tool
+async def schedule_call(
+    customer_email: str,
+    preferred_time: str,
+    duration_minutes: int = 30
+):
+    """Schedule a call with the customer"""
+    # Integration logic here
+    result = await calendar_api.create_event(...)
+    return f"Call scheduled for {preferred_time}"
+```
+
+**2. Register in Agent Factory:**
+```python
+# src/agents/agent_factory.py
+TOOL_REGISTRY = {
+    "schedule_call": schedule_call,
+    "send_email": send_email_notification,
+    "book_appointment": book_medical_appointment,
+    "process_payment": process_stripe_payment,
+}
+```
+
+**3. Configure in JSON Schema:**
+```json
+{
+  "agents": [
+    {
+      "name": "BookingAgent",
+      "tools": ["schedule_call", "send_email"],
+      "instructions": "Help customers book appointments..."
+    }
+  ]
+}
+```
+
+#### **Integration Examples by Industry:**
+
+**Healthcare:**
+```python
+tools = [
+    "insurance_verification",
+    "appointment_booking",
+    "prescription_refill",
+    "lab_results_lookup",
+    "provider_search"
+]
+```
+
+**E-commerce:**
+```python
+tools = [
+    "inventory_check",
+    "price_lookup",
+    "order_tracking",
+    "return_process",
+    "loyalty_points"
+]
+```
+
+**Financial Services:**
+```python
+tools = [
+    "account_balance",
+    "transaction_history",
+    "fraud_detection",
+    "loan_application",
+    "investment_advice"
+]
+```
+
+**Real Estate:**
+```python
+tools = [
+    "property_search",
+    "mortgage_calculator",
+    "showing_scheduler",
+    "document_upload",
+    "market_analysis"
+]
+```
+
+#### **Common Integration Patterns:**
+
+**API Integrations:**
+- **CRM Systems**: Salesforce, HubSpot, Pipedrive
+- **Calendar**: Google Calendar, Outlook, Calendly
+- **Communication**: Twilio, SendGrid, Slack
+- **Payment**: Stripe, PayPal, Square
+- **Database**: Custom APIs, GraphQL endpoints
+
+**Authentication & Security:**
+```python
+@function_tool
+async def secure_api_call(endpoint: str, data: dict):
+    headers = {
+        "Authorization": f"Bearer {get_jwt_token()}",
+        "Content-Type": "application/json"
+    }
+    async with httpx.AsyncClient() as client:
+        response = await client.post(endpoint, json=data, headers=headers)
+        return response.json()
+```
+
+#### **Tool Development Best Practices:**
+
+**1. Error Handling:**
+```python
+@function_tool
+async def robust_tool(param: str):
+    try:
+        result = await external_api_call(param)
+        return {"success": True, "data": result}
+    except APIException as e:
+        return {"success": False, "error": str(e)}
+```
+
+**2. Rate Limiting:**
+```python
+from asyncio import Semaphore
+
+api_semaphore = Semaphore(5)  # Max 5 concurrent calls
+
+@function_tool
+async def rate_limited_tool(param: str):
+    async with api_semaphore:
+        return await external_api_call(param)
+```
+
+**3. Caching:**
+```python
+from functools import lru_cache
+
+@lru_cache(maxsize=128)
+@function_tool
+async def cached_lookup(query: str):
+    return await expensive_lookup(query)
+```
+
+### 📈 **Scalability Roadmap**
+
+#### **Phase 1: Infrastructure & DevOps**
+- **Containerization**: Docker containers for all services
+- **CI/CD Pipeline**: Automated testing and deployment
+- **Monitoring**: Prometheus + Grafana dashboards
+- **Logging**: Centralized logging with ELK stack
+
+#### **Phase 2: Enhanced Features**
+- **A/B Testing**: Built-in experimentation framework
+- **Analytics**: Customer interaction analytics and insights
+- **Multi-language**: Support for multiple languages per customer
+- **Caching Layer**: Redis-based caching for improved performance
+
+#### **Phase 3: Enterprise Features**
+- **SSO Integration**: SAML/OAuth enterprise authentication
+- **Audit Logs**: Compliance-ready activity tracking
+- **White-labeling**: Custom branding per customer
+- **High Availability**: Multi-region deployment with failover
+
+#### **Phase 4: AI/ML Enhancements**
+- **Intent Recognition**: Better understanding of customer needs
+- **Sentiment Analysis**: Real-time emotion detection
+- **Predictive Routing**: ML-based agent selection
+- **Auto-scaling**: Dynamic resource allocation based on demand
+
+The current manual setup demonstrates the core functionality, while the roadmap shows how DevOps practices will streamline development and deployment processes.
