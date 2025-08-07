@@ -1,16 +1,6 @@
 # Multi-Prompt Agent Implementation
 
-**Hiring Project: Dynamic Multi-Prompt Agent Architecture using LiveKit**
-
-## Demo Video
-
-🎥 **[Watch the Live Demo](https://www.loom.com/share/744bb44859234feca149a0866f070b36)**
-
-*7-minute walkthrough demonstrating:*
-- *Architecture overview and design decisions*
-- *JSON schema structure and validation*
-- *Live API demonstrations with real agent configurations*
-- *Extension points for adding new agent types*
+**Dynamic Multi-Prompt Agent Architecture using LiveKit**
 
 ---
 
@@ -556,3 +546,4 @@ async def cached_lookup(query: str):
 - **Auto-scaling**: Dynamic resource allocation based on demand
 
 The current manual setup demonstrates the core functionality, while the roadmap shows how DevOps practices will streamline development and deployment processes.
+
